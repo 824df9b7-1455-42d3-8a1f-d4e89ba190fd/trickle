@@ -1,0 +1,147 @@
+Trickle.sln
+├── src/
+│   ├── Trickle.Common/               # Core abstractions and utilities
+│   ├── Trickle.Dimensions/           # Shared reference data across domains
+│   ├── Trickle.ContainerSecurity/    # Container security domain
+│   ├── Trickle.CloudSecurity/        # CSPM (Cloud Security Posture Management)
+│   ├── Trickle.WorkloadProtection/   # CWP (Cloud Workload Protection)
+│   └── Trickle.Correlation/          # Cross-domain correlation
+├── deploy/                           # Deployment resources
+│   ├── bicep/                        # Infrastructure as code
+│   └── scripts/                      # Deployment scripts
+├── tests/                            # Test projects
+│   ├── Unit/                         # Unit tests
+│   ├── Integration/                  # Integration tests
+│   └── E2E/                          # End-to-end tests  
+└── config/                           # Configuration
+    ├── dimensions/                   # Dimension configuration
+    └── tenants/                      # Tenant-specific settings
+
+src/Trickle.Common/
+├── Domain/                           # Core domain models
+│   ├── SecurityEvent.cs              # Base event class
+│   ├── SecuritySeverity.cs           # Severity enumeration
+│   └── ProcessingResult.cs           # Standard result objects
+├── Infrastructure/                   # Shared infrastructure
+│   ├── ServiceRegistration.cs        # DI registration
+│   ├── RegionalAwareness/            # Regional support
+│   └── Middleware/                   # Function middleware
+├── Messaging/                        # Messaging components
+│   ├── ISecurityEventPublisher.cs    # Publisher interface
+│   └── SecurityEventPublisher.cs     # Default implementation
+├── Dimensions/                       # Dimension framework
+│   ├── IDimension.cs                 # Core dimension interface
+│   ├── IDimensionSource.cs           # Dimension data source
+│   └── Implementations/              # Base implementations
+├── State/                            # State management
+│   ├── IStateRepository.cs           # Repository interface
+│   └── PostgresRepository.cs         # Base implementation
+├── DataSources/                      # Data source abstractions
+│   ├── IDataSource.cs                # Base data source interface
+│   ├── IEventSource.cs               # Event source interface
+│   └── BaseDataSource.cs             # Common implementation
+└── Functions/                        # Function base classes
+    ├── BaseEventFunction.cs          # Event function base
+    ├── RegionalDataFunction.cs       # Region-aware function
+    └── PowerShellSupport/            # PowerShell integration
+
+src/Trickle.ContainerSecurity/
+├── Domain/                           # Domain-specific models
+│   ├── Events/                       # Domain events
+│   │   ├── ContainerVulnerabilityEvent.cs    # CVE event
+│   │   └── ContainerAnomalyEvent.cs          # Anomaly event
+│   └── Models/                       # Domain object models
+│       ├── Vulnerability.cs          # Vulnerability model
+│       └── ContainerAnomaly.cs       # Anomaly model
+├── DataSources/                      # All data sources
+│   ├── Events/                       # Event sources
+│   │   ├── CSharp/                   # C# implementations
+│   │   │   ├── StackRoxVulnerabilityDetector.cs  # CVE detection
+│   │   │   └── StackRoxViolationDetector.cs      # Violation detection
+│   │   └── PowerShell/               # PowerShell implementations
+│   ├── Dimensions/                   # Dimension sources
+│   │   ├── ClusterProvider.cs        # Cluster information
+│   │   └── CveAllowlistProvider.cs   # CVE allowlist
+│   └── Services/                     # Shared services
+│       ├── StackRoxClient.cs         # Client for StackRox API
+│       └── KubernetesMetadataService.cs  # K8s metadata
+├── Processors/                       # Domain processors
+│   ├── CSharp/                       # C# implementations
+│   │   ├── VulnerabilityProcessor.cs # Processes vulnerabilities
+│   │   └── AnomalyProcessor.cs       # Processes anomalies
+│   └── PowerShell/                   # PowerShell implementations
+├── Interactors/                      # Domain interactors
+│   ├── CSharp/                       # C# implementations
+│   │   ├── VulnerabilityNotifier.cs  # Sends vulnerability alerts
+│   │   └── AnomalyNotifier.cs        # Sends anomaly alerts
+│   └── PowerShell/                   # PowerShell implementations
+└── Startup.cs                        # Domain startup
+
+src/Trickle.CloudSecurity/
+├── Domain/                           # Domain-specific models
+│   ├── Events/                       # Domain events
+│   │   ├── ExposedVmEvent.cs         # VM exposure event
+│   │   └── IllegalRbacEvent.cs       # RBAC violation event
+│   └── Models/                       # Domain object models
+│       ├── VirtualMachine.cs         # VM model
+│       └── RbacAssignment.cs         # RBAC assignment model
+├── DataSources/                      # All data sources
+│   ├── Events/                       # Event sources
+│   │   ├── CSharp/                   # C# implementations
+│   │   │   ├── VmExposureDetector.cs # VM exposure detector
+│   │   │   └── RbacViolationDetector.cs # RBAC violation detector
+│   │   └── PowerShell/               # PowerShell implementations
+│   ├── Dimensions/                   # Dimension sources
+│   │   ├── RbacRoleDefinitionProvider.cs  # RBAC role definitions
+│   │   └── VmAllowlistProvider.cs    # VM exposure allowlist
+│   └── Services/                     # Shared services
+│       └── ResourceGraphService.cs   # ARG query service
+├── Processors/                       # Domain processors
+│   ├── CSharp/                       # C# implementations
+│   │   ├── VmExposureProcessor.cs    # Processes VM exposures
+│   │   └── RbacViolationProcessor.cs # Processes RBAC violations
+│   └── PowerShell/                   # PowerShell implementations
+├── Interactors/                      # Domain interactors
+│   ├── CSharp/                       # C# implementations
+│   └── PowerShell/                   # PowerShell implementations
+└── Startup.cs                        # Domain startup
+
+src/Trickle.WorkloadProtection/
+├── Domain/                           # Domain-specific models
+│   ├── Events/                       # Domain events
+│   │   └── AnomalousAccessEvent.cs   # Anomalous access event
+│   └── Models/                       # Domain object models
+│       └── ResourceAccess.cs         # Resource access model
+├── DataSources/                      # All data sources
+│   ├── Events/                       # Event sources
+│   │   ├── CSharp/                   # C# implementations
+│   │   │   └── DiagnosticLogConnector.cs # Event Hub connector
+│   │   └── PowerShell/               # PowerShell implementations
+│   ├── Dimensions/                   # Dimension sources
+│   │   ├── ResourceAccessPatternProvider.cs # Access patterns
+│   │   └── ServicePrincipalProvider.cs  # Service principal info
+│   └── Services/                     # Shared services
+│       └── DiagnosticLogParsingService.cs # Log parsing
+├── Processors/                       # Domain processors
+│   ├── CSharp/                       # C# implementations
+│   │   └── AnomalousAccessProcessor.cs # Processes anomalies
+│   └── PowerShell/                   # PowerShell implementations
+├── Interactors/                      # Domain interactors
+│   ├── CSharp/                       # C# implementations
+│   │   └── AnomalousAccessNotifier.cs # Sends anomaly alerts
+│   └── PowerShell/                   # PowerShell implementations
+└── Startup.cs                        # Domain startup
+
+src/Trickle.Dimensions/
+├── Ownership/                        # Tenant ownership
+│   ├── OwnershipMapping.cs           # Ownership mapping model
+│   └── OwnershipProvider.cs          # Ownership provider
+├── ResourceGraph/                    # ARG-based dimensions
+│   ├── SubscriptionProvider.cs       # Subscription information
+│   └── ResourceTypeProvider.cs       # Resource type definitions
+├── RBAC/                             # RBAC information
+│   ├── RoleDefinitionProvider.cs     # Role definitions
+│   └── RbacHelper.cs                 # RBAC helpers
+└── Functions/                        # Dimension updater functions
+    ├── OwnershipUpdater.cs           # Updates ownership mappings
+    └── SubscriptionUpdater.cs        # Updates subscription info
