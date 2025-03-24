@@ -1,0 +1,131 @@
+flowchart TB
+    %% External Sources
+    AzureResources[Azure Resources]
+    StackRox[StackRox API]
+    Cloudflare[Cloudflare API]
+    EntraID[Microsoft Entra ID]
+    
+    %% Collectors
+    subgraph Collectors
+        VMCollector[VM Exposure Detector]
+        ContainerCollector[Container Vulnerability Detector]
+        NetworkCollector[Network Flow Detector]
+        IdentityCollector[Identity Risk Detector]
+    end
+    
+    %% Event Grid
+    EventGrid1[Azure Event Grid]
+    
+    %% Analyzers
+    subgraph Analyzers
+        VMAnalyzer[VM Exposure Analyzer]
+        ContainerAnalyzer[Container Vulnerability Analyzer]
+        NetworkAnalyzer[Network Flow Analyzer]
+        IdentityAnalyzer[Identity Risk Analyzer]
+        CrossDomainAnalyzer[Cross-Domain Correlation Engine]
+    end
+    
+    %% Data Stores
+    PostgreSQL[(PostgreSQL)]
+    ADX[(Azure Data Explorer)]
+    
+    %% Reference Data
+    subgraph ReferenceData[Reference Data]
+        OwnershipRef[Ownership Reference]
+        SubscriptionRef[Subscription Reference]
+        ClusterRef[Cluster Reference]
+        CveRef[CVE Reference]
+    end
+    
+    %% Event Grid 2
+    EventGrid2[Azure Event Grid]
+    
+    %% Responders
+    subgraph Responders
+        EmailResponder[Email Notifier]
+        TeamsResponder[Teams Alert Responder]
+        JiraResponder[Jira Ticket Creator]
+        AutoRemediation[Auto-Remediation Orchestrator]
+    end
+    
+    %% Destinations
+    Email[Email]
+    Teams[Microsoft Teams]
+    Jira[Jira]
+    Runbooks[Azure Automation]
+    
+    %% Flow connections
+    AzureResources --> VMCollector
+    StackRox --> ContainerCollector
+    Cloudflare --> NetworkCollector
+    EntraID --> IdentityCollector
+    
+    VMCollector --> EventGrid1
+    ContainerCollector --> EventGrid1
+    NetworkCollector --> EventGrid1
+    IdentityCollector --> EventGrid1
+    
+    EventGrid1 --> VMAnalyzer
+    EventGrid1 --> ContainerAnalyzer
+    EventGrid1 --> NetworkAnalyzer
+    EventGrid1 --> IdentityAnalyzer
+    
+    VMAnalyzer --> CrossDomainAnalyzer
+    ContainerAnalyzer --> CrossDomainAnalyzer
+    NetworkAnalyzer --> CrossDomainAnalyzer
+    IdentityAnalyzer --> CrossDomainAnalyzer
+    
+    VMAnalyzer --> PostgreSQL
+    ContainerAnalyzer --> PostgreSQL
+    NetworkAnalyzer --> PostgreSQL
+    IdentityAnalyzer --> PostgreSQL
+    CrossDomainAnalyzer --> PostgreSQL
+    
+    VMAnalyzer --> ADX
+    ContainerAnalyzer --> ADX
+    NetworkAnalyzer --> ADX
+    IdentityAnalyzer --> ADX
+    
+    OwnershipRef -.-> VMAnalyzer
+    OwnershipRef -.-> ContainerAnalyzer
+    OwnershipRef -.-> NetworkAnalyzer
+    OwnershipRef -.-> IdentityAnalyzer
+    
+    SubscriptionRef -.-> VMAnalyzer
+    SubscriptionRef -.-> NetworkAnalyzer
+    
+    ClusterRef -.-> ContainerAnalyzer
+    CveRef -.-> ContainerAnalyzer
+    
+    VMAnalyzer --> EventGrid2
+    ContainerAnalyzer --> EventGrid2
+    NetworkAnalyzer --> EventGrid2
+    IdentityAnalyzer --> EventGrid2
+    CrossDomainAnalyzer --> EventGrid2
+    
+    EventGrid2 --> EmailResponder
+    EventGrid2 --> TeamsResponder
+    EventGrid2 --> JiraResponder
+    EventGrid2 --> AutoRemediation
+    
+    EmailResponder --> Email
+    TeamsResponder --> Teams
+    JiraResponder --> Jira
+    AutoRemediation --> Runbooks
+    
+    %% Styles
+    classDef external fill:#gray,stroke:#333,stroke-width:2px;
+    classDef collector fill:#lightblue,stroke:#0066cc,stroke-width:2px;
+    classDef analyzer fill:#lightgreen,stroke:#009933,stroke-width:2px;
+    classDef datastore fill:#orange,stroke:#cc6600,stroke-width:2px;
+    classDef reference fill:#lightpurple,stroke:#9900cc,stroke-width:2px;
+    classDef responder fill:#pink,stroke:#cc0066,stroke-width:2px;
+    classDef destination fill:#yellow,stroke:#999900,stroke-width:2px;
+    
+    class AzureResources,StackRox,Cloudflare,EntraID external;
+    class VMCollector,ContainerCollector,NetworkCollector,IdentityCollector collector;
+    class VMAnalyzer,ContainerAnalyzer,NetworkAnalyzer,IdentityAnalyzer,CrossDomainAnalyzer analyzer;
+    class PostgreSQL,ADX datastore;
+    class OwnershipRef,SubscriptionRef,ClusterRef,CveRef reference;
+    class EmailResponder,TeamsResponder,JiraResponder,AutoRemediation responder;
+    class Email,Teams,Jira,Runbooks destination;
